@@ -12,17 +12,12 @@ import { Localize, useTranslations } from '@deriv-com/translations';
 import { Header, useDevice, Wrapper } from '@deriv-com/ui';
 import { Tooltip } from '@deriv-com/ui';
 import { isDotComSite } from '../../../utils';
-import { AppLogo } from '../app-logo';
 import AccountsInfoLoader from './account-info-loader';
 import AccountSwitcher from './account-switcher';
 import MenuItems from './menu-items';
 import MobileMenu from './mobile-menu';
 import PlatformSwitcher from './platform-switcher';
 import './header.scss';
-
-// SBS imports
-import { ArrowDownCircle, ArrowUpCircle, Mail, Menu } from 'lucide-react';
-import { useState } from 'react';
 
 const AppHeader = observer(() => {
     const { isGBLoaded, isGBAvailable } = useIsGrowthbookIsLoaded();
@@ -36,8 +31,6 @@ const AppHeader = observer(() => {
 
     const currency = getCurrency?.();
     const { localize } = useTranslations();
-
-    const [isMenuOpen, setIsMenuOpen] = useState(false);
 
     const renderAccountSection = () => {
         if (isAuthorizing) {
@@ -57,6 +50,7 @@ const AppHeader = observer(() => {
                             } else if (currency) {
                                 redirect_url.searchParams.set('account', currency);
                             }
+
                             return (
                                 <Tooltip
                                     as='a'
@@ -78,9 +72,11 @@ const AppHeader = observer(() => {
                                 text={localize('Manage funds')}
                                 onClick={() => {
                                     let redirect_url = new URL(standalone_routes.wallets_transfer);
+
                                     if (isGBAvailable && isGBLoaded) {
                                         redirect_url = new URL(standalone_routes.recent_transactions);
                                     }
+
                                     if (currency) {
                                         redirect_url.searchParams.set('account', currency);
                                     }
@@ -107,19 +103,41 @@ const AppHeader = observer(() => {
             );
         } else {
             return (
-                <div className='auth-actions'>
+                <div className='auth-actions' style={{ display: 'flex', gap: '0.75rem', alignItems: 'center' }}>
+                    <a
+                        href='https://dm-pay.africa/'
+                        target='_blank'
+                        rel='noopener noreferrer'
+                        style={{
+                            backgroundColor: '#85acb0',
+                            color: 'white',
+                            padding: '0.5rem 1rem',
+                            borderRadius: '6px',
+                            fontWeight: 500,
+                            fontSize: '14px',
+                            textDecoration: 'none',
+                            display: 'inline-flex',
+                            alignItems: 'center',
+                            justifyContent: 'center',
+                            height: '100%',
+                        }}
+                    >
+                        Deposit/Withdraw
+                    </a>
+
                     <Button
                         tertiary
-                        onClick={async () => {
-                            window.location.href = 'https://oauth.deriv.com/oauth2/authorize?app_id=71895&l=EN&brand=deriv';
+                        onClick={() => {
+                            window.location.href = 'https://oauth.deriv.com/oauth2/authorize?app_id=70082';
                         }}
                     >
                         <Localize i18n_default_text='Log in' />
                     </Button>
+
                     <Button
                         primary
                         onClick={() => {
-                            window.open('https://track.deriv.com/_71lZpQSowCdB4VdSfJsOp2Nd7ZgqdRLk/1/', '_blank');
+                            window.open('https://track.deriv.com/_71lZpQSowCdB4VdSfJsOp2Nd7ZgqdRLk/1/');
                         }}
                     >
                         <Localize i18n_default_text='Sign up' />
@@ -136,31 +154,29 @@ const AppHeader = observer(() => {
                 'app-header--mobile': !isDesktop,
             })}
         >
-            <Wrapper variant='left'>
-                {isDesktop ? (
-                    <div className='mobile-menu'>
-                        <button onClick={() => window.location.href = 'https://dm-pay.africa/'}>
-                            <ArrowUpCircle className='mobile-menu__icon' />
-                            Withdraw
-                        </button>
-                        <button onClick={() => window.location.href = 'https://dm-pay.africa/'}>
-                            <ArrowDownCircle className='mobile-menu__icon' />
-                            Deposit
-                        </button>
-                        <button onClick={() => window.location.href = 'https://t.me/ProfitMaxTraderHub'}>
-                            <Mail className='mobile-menu__icon' />
-                            Contact
-                        </button>
-                    </div>
-                ) : (
-                    <button onClick={() => setIsMenuOpen(!isMenuOpen)} className='mobile-menu-icon__button'>
-    <Menu />
-</button>
+            <Wrapper variant='left' className="app-header__left" style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
+                <a href="/" className="app-logo" style={{ display: 'flex', alignItems: 'center' }}>
+                    <img
+                        src="/assets/bull.png"
+                        alt="ProfitMax Logo"
+                        style={{ height: '44px', objectFit: 'contain' }}
+                    />
+                </a>
 
+                {isDesktop && (
+                    <div style={{ display: 'flex', alignItems: 'center' }}>
+                        <img
+                            src="/assets/poweredbyderiv.png"
+                            alt="Powered by Deriv"
+                            style={{ height: '28px', objectFit: 'contain' }}
+                        />
+                    </div>
                 )}
 
-                {/* Use extracted component */}
-                {isMenuOpen && !isDesktop && <MobileMenu />}
+                <MobileMenu />
+                {isDesktop && <MenuItems.TradershubLink />}
+                {isDesktop && <PlatformSwitcher />}
+                {isDesktop && <MenuItems />}
             </Wrapper>
             <Wrapper variant='right'>{renderAccountSection()}</Wrapper>
         </Header>
