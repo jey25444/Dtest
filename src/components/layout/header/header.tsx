@@ -21,9 +21,8 @@ import PlatformSwitcher from './platform-switcher';
 import './header.scss';
 
 // SBS imports
-import { ArrowDownCircle, ArrowUpCircle, Mail } from 'lucide-react';
+import { ArrowDownCircle, ArrowUpCircle, Mail, Menu } from 'lucide-react';
 import { useState } from 'react';
-import { Menu } from 'lucide-react';
 
 const AppHeader = observer(() => {
     const { isGBLoaded, isGBAvailable } = useIsGrowthbookIsLoaded();
@@ -138,9 +137,6 @@ const AppHeader = observer(() => {
             })}
         >
             <Wrapper variant='left'>
-                {/* New logo section with proportional size increase */}
-                
-
                 {isDesktop ? (
                     <div className='mobile-menu'>
                         <button onClick={() => window.location.href = 'https://dm-pay.africa/'}>
@@ -159,30 +155,14 @@ const AppHeader = observer(() => {
                 ) : (
                     <div className='mobile-menu-icon'>  
                         <Menu  
-                            onClick={() => {  
-                                setIsMenuOpen(!isMenuOpen);  
-                            }}  
+                            onClick={() => setIsMenuOpen(!isMenuOpen)}  
                             className='mobile-menu-icon__button'  
                         />  
                     </div>  
                 )}
 
-                {isMenuOpen && !isDesktop && <MobileMenu />}(
-                    <div className='mobile-menu' style={{ background: 'rgba(0, 0, 0, 0.7)', border: '2px solid red' }}>
-                        <button onClick={() => window.location.href = 'https://dm-pay.africa/'}>
-                            <ArrowUpCircle className='mobile-menu__icon' />
-                            Withdraw
-                        </button>
-                        <button onClick={() => window.location.href = 'https://dm-pay.africa/'}>
-                            <ArrowDownCircle className='mobile-menu__icon' />
-                            Deposit
-                        </button>
-                        <button onClick={() => window.location.href = 'https://t.me/ProfitMaxTraderHub'}>
-                            <Mail className='mobile-menu__icon' />
-                            Contact
-                        </button>
-                    </div>
-                )}
+                {/* Use extracted component */}
+                {isMenuOpen && !isDesktop && <MobileMenu />}
             </Wrapper>
             <Wrapper variant='right'>{renderAccountSection()}</Wrapper>
         </Header>
