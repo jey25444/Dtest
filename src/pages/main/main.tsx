@@ -284,7 +284,7 @@ const AppWrapper = observer(() => {
                             </Suspense>
                         </div>
 
-                        <div
+                        {/*    <div
                             label={(
                                 <>
                                     <Localize i18n_default_text={localize('🧲 Tools')} />
@@ -297,7 +297,7 @@ const AppWrapper = observer(() => {
                             <Suspense fallback={<ChunkLoader message={localize('Please wait, loading  page...')} />}>
                                 <Tool />
                             </Suspense>
-                        </div>
+                        </div>*/}
 
                         {/*<div
                             label={(
@@ -348,7 +348,7 @@ const AppWrapper = observer(() => {
                             </Suspense>
                         </div>
 
-                        <div
+                        {/* <div
                             label={(
                                 <>
                                     <Localize i18n_default_text={localize('🕹️ AI')} />
@@ -361,9 +361,9 @@ const AppWrapper = observer(() => {
                             <Suspense fallback={<ChunkLoader message={localize('Please wait, loading AI page...')} />}>
                                 <AiPage />
                             </Suspense>
-                        </div>
+                        </div>*/}
 
-                        <div
+                        {  /* <div
                             label={(
                                 <>
                                     <Localize i18n_default_text={localize('📢 Signal')} />
@@ -376,7 +376,7 @@ const AppWrapper = observer(() => {
                             <Suspense fallback={<ChunkLoader message={localize('Please wait, loading Signal page...')} />}>
                                 <SignalPage />
                             </Suspense>
-                        </div>
+                        </div>*/}
 
                         {/*   < div
                             label={(
