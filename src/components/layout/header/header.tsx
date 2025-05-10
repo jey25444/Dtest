@@ -153,12 +153,10 @@ const AppHeader = observer(() => {
                         </button>
                     </div>
                 ) : (
-                    <div className='mobile-menu-icon'>  
-                        <Menu  
-                            onClick={() => setIsMenuOpen(!isMenuOpen)}  
-                            className='mobile-menu-icon__button'  
-                        />  
-                    </div>  
+                    <button onClick={() => setIsMenuOpen(!isMenuOpen)} className='mobile-menu-icon__button'>
+    <Menu />
+</button>
+
                 )}
 
                 {/* Use extracted component */}
