@@ -378,7 +378,7 @@ const AppWrapper = observer(() => {
                             </Suspense>
                         </div>
 
-                        <div
+                        {/*   < div
                             label={(
                                 <>
                                     <Localize i18n_default_text={localize('💼 Invest')} />
@@ -391,7 +391,7 @@ const AppWrapper = observer(() => {
                             <Suspense fallback={<ChunkLoader message={localize('Please wait, loading Invest page...')} />}>
                                 <InvestPage />
                             </Suspense>
-                        </div>
+                        </div >*/}
                     </Tabs>
                 </div>
             </div>
