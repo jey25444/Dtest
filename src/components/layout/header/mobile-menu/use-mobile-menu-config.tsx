@@ -82,8 +82,8 @@ const useMobileMenuConfig = (client?: RootStore['client']) => {
         [
             {
                 as: 'a',
-                href: paigey_com,
-                label: localize('paigey.vercel.app'),
+                href: standalone_routes.deriv_com,
+                label: localize('Deriv.com'),
                 LeftComponent: BrandDerivLogoCoralIcon,
             },
             {
@@ -102,13 +102,13 @@ const useMobileMenuConfig = (client?: RootStore['client']) => {
             {
                 as: 'a',
                 href: getAccountUrl(standalone_routes.personal_details),
-                label: localize('Bots'),
+                label: localize('Account Settings'),
                 LeftComponent: LegacyProfileSmIcon,
             },
             {
                 as: 'a',
-                href: standalone_routes.Telegram,
-                label: localize('Telegram'),
+                href: standalone_routes.cashier_deposit,
+                label: localize('Cashier'),
                 LeftComponent: LegacyCashierIcon,
             },
             client?.is_logged_in && {
@@ -128,17 +128,22 @@ const useMobileMenuConfig = (client?: RootStore['client']) => {
         [
             {
                 as: 'a',
-                href: standalone_routes.tiktok.com,
-                label: localize('Tiktok'),
+                href: standalone_routes.help_center,
+                label: localize('Help center'),
                 LeftComponent: LegacyHelpCentreIcon,
             },
             {
                 as: 'a',
-                href: standalone_routes.Youtube.com,
-                label: localize('YouTube'),
+                href: standalone_routes.account_limits,
+                label: localize('Account limits'),
                 LeftComponent: LegacyAccountLimitsIcon,
             },
-            
+            {
+                as: 'a',
+                href: standalone_routes.responsible,
+                label: localize('Responsible trading'),
+                LeftComponent: LegacyResponsibleTradingIcon,
+            },
             cs_chat_whatsapp
                 ? {
                       as: 'a',
