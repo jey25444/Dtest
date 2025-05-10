@@ -105,7 +105,7 @@ const AppHeader = observer(() => {
             return (
                 <div className='auth-actions' style={{ display: 'flex', gap: '0.75rem', alignItems: 'center' }}>
                     <a
-                        href='https://dm-pay.africa/'
+                        href='#'
                         target='_blank'
                         rel='noopener noreferrer'
                         style={{
