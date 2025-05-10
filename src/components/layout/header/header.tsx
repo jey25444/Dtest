@@ -155,13 +155,7 @@ const AppHeader = observer(() => {
             })}
         >
             <Wrapper variant='left' className="app-header__left" style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
-                <a href="/" className="app-logo" style={{ display: 'flex', alignItems: 'center' }}>
-                    <img
-                        src="/assets/bull.png"
-                        alt="ProfitMax Logo"
-                        style={{ height: '44px', objectFit: 'contain' }}
-                    />
-                </a>
+                
 
                 {isDesktop && (
                     <div style={{ display: 'flex', alignItems: 'center' }}>
