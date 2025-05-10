@@ -132,61 +132,18 @@ const AppHeader = observer(() => {
 
     return (
         <Header
-            className={clsx('app-header', {
-                'app-header--desktop': isDesktop,
-                'app-header--mobile': !isDesktop,
-            })}
-        >
-            <Wrapper variant='left'>
-                {/* New logo section with proportional size increase */}
-                <div className='custom-logo-wrapper' style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-                       </div>
-
-                {isDesktop ? (
-                    <div className='mobile-menu'>
-                        <button onClick={() => window.location.href = 'https://dm-pay.africa/'}>
-                            <ArrowUpCircle className='mobile-menu__icon' />
-                            Withdraw
-                        </button>
-                        <button onClick={() => window.location.href = 'https://dm-pay.africa/'}>
-                            <ArrowDownCircle className='mobile-menu__icon' />
-                            Deposit
-                        </button>
-                        <button onClick={() => window.location.href = 'https://t.me/ProfitMaxTraderHub'}>
-                            <Mail className='mobile-menu__icon' />
-                            Contact
-                        </button>
-                    </div>
-                ) : (
-                    <div className='mobile-menu-icon'>
-                        <Menu
-                            onClick={() => {
-                                setIsMenuOpen(!isMenuOpen);
-                            }}
-                            className='mobile-menu-icon__button'
-                        />
-                    </div>
-                )}
-
-                {isMenuOpen && !isDesktop && (
-                    <div className='mobile-menu' style={{ background: 'rgba(0, 0, 0, 0.7)', border: '2px solid red' }}>
-                        <button onClick={() => window.location.href = 'https://dm-pay.africa/'}>
-                            <ArrowUpCircle className='mobile-menu__icon' />
-                            Withdraw
-                        </button>
-                        <button onClick={() => window.location.href = 'https://dm-pay.africa/'}>
-                            <ArrowDownCircle className='mobile-menu__icon' />
-                            Deposit
-                        </button>
-                        <button onClick={() => window.location.href = 'https://t.me/ProfitMaxTraderHub'}>
-                            <Mail className='mobile-menu__icon' />
-                            Contact
-                        </button>
-                    </div>
-                )}
-            </Wrapper>
-            <Wrapper variant='right'>{renderAccountSection()}</Wrapper>
-        </Header>
+            className={clsx('app-header', {
+                'app-header--desktop': isDesktop,
+                'app-header--mobile': !isDesktop,
+            })}
+        >
+            <Wrapper variant='left'>
+                <AppLogo />
+                <MobileMenu />
+            
+            </Wrapper>
+            <Wrapper variant='right'>{renderAccountSection()}</Wrapper>
+        </Header>
     );
 });
 
