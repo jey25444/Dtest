@@ -138,12 +138,7 @@ const useMobileMenuConfig = (client?: RootStore['client']) => {
                 label: localize('YouTube'),
                 LeftComponent: LegacyAccountLimitsIcon,
             },
-            {
-                as: 'a',
-                href: standalone_routes.Instagram.com,
-                label: localize('Instagram),
-                LeftComponent: LegacyResponsibleTradingIcon,
-            },
+            
             cs_chat_whatsapp
                 ? {
                       as: 'a',
