@@ -3,7 +3,7 @@ import { observer } from 'mobx-react-lite';
 import { standalone_routes } from '@/components/shared';
 import Button from '@/components/shared_ui/button';
 import useActiveAccount from '@/hooks/api/account/useActiveAccount';
-import useIsGrowthbookIsLoaded from '@/hooks/growthbook/useIsGrowthbookLoaded';
+import { useOauth2 } from '@/hooks/auth/useOauth2';
 import { useApiBase } from '@/hooks/useApiBase';
 import { useStore } from '@/hooks/useStore';
 import { StandaloneCircleUserRegularIcon } from '@deriv/quill-icons/Standalone';
@@ -11,7 +11,6 @@ import { requestOidcAuthentication } from '@deriv-com/auth-client';
 import { Localize, useTranslations } from '@deriv-com/translations';
 import { Header, useDevice, Wrapper } from '@deriv-com/ui';
 import { Tooltip } from '@deriv-com/ui';
-import { isDotComSite } from '../../../utils';
 import { AppLogo } from '../app-logo';
 import AccountsInfoLoader from './account-info-loader';
 import AccountSwitcher from './account-switcher';
@@ -20,25 +19,32 @@ import MobileMenu from './mobile-menu';
 import PlatformSwitcher from './platform-switcher';
 import './header.scss';
 
-// SBS imports
-import { ArrowDownCircle, ArrowUpCircle, Mail } from 'lucide-react';
-import { useState } from 'react';
-import { Menu } from 'lucide-react';
+const TelegramIcon = () => (
+    <a href="https://t.me/binaryfx_site" target="_blank" rel="noopener noreferrer" className="telegram-icon">
+       <svg width="25px" height="25px" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
+
+<g id="SVGRepo_bgCarrier" stroke-width="0"/>
+
+<g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round"/>
+
+<g id="SVGRepo_iconCarrier"> <circle cx="16" cy="16" r="14" fill="url(#paint0_linear_87_7225)"/> <path d="M22.9866 10.2088C23.1112 9.40332 22.3454 8.76755 21.6292 9.082L7.36482 15.3448C6.85123 15.5703 6.8888 16.3483 7.42147 16.5179L10.3631 17.4547C10.9246 17.6335 11.5325 17.541 12.0228 17.2023L18.655 12.6203C18.855 12.4821 19.073 12.7665 18.9021 12.9426L14.1281 17.8646C13.665 18.3421 13.7569 19.1512 14.314 19.5005L19.659 22.8523C20.2585 23.2282 21.0297 22.8506 21.1418 22.1261L22.9866 10.2088Z" fill="white"/> <defs> <linearGradient id="paint0_linear_87_7225" x1="16" y1="2" x2="16" y2="30" gradientUnits="userSpaceOnUse"> <stop stop-color="#37BBFE"/> <stop offset="1" stop-color="#007DBB"/> </linearGradient> </defs> </g>
+
+</svg>
+    </a>
+);
 
 const AppHeader = observer(() => {
-    const { isGBLoaded, isGBAvailable } = useIsGrowthbookIsLoaded();
     const { isDesktop } = useDevice();
     const { isAuthorizing, activeLoginid } = useApiBase();
     const { client } = useStore() ?? {};
 
     const { data: activeAccount } = useActiveAccount({ allBalanceData: client?.all_accounts_balance });
-    const { accounts, getCurrency } = client ?? {};
+    const { accounts } = client ?? {};
     const has_wallet = Object.keys(accounts ?? {}).some(id => accounts?.[id].account_category === 'wallet');
 
-    const currency = getCurrency?.();
     const { localize } = useTranslations();
 
-    const [isMenuOpen, setIsMenuOpen] = useState(false);
+    const { isOAuth2Enabled } = useOauth2();
 
     const renderAccountSection = () => {
         if (isAuthorizing) {
@@ -46,30 +52,17 @@ const AppHeader = observer(() => {
         } else if (activeLoginid) {
             return (
                 <>
-                    {isDesktop &&
-                        (() => {
-                            const redirect_url = new URL(standalone_routes.personal_details);
-                            const urlParams = new URLSearchParams(window.location.search);
-                            const account_param = urlParams.get('account');
-                            const is_virtual = client?.is_virtual || account_param === 'demo';
-
-                            if (is_virtual) {
-                                redirect_url.searchParams.set('account', 'demo');
-                            } else if (currency) {
-                                redirect_url.searchParams.set('account', currency);
-                            }
-                            return (
-                                <Tooltip
-                                    as='a'
-                                    href={redirect_url.toString()}
-                                    tooltipContent={localize('Manage account settings')}
-                                    tooltipPosition='bottom'
-                                    className='app-header__account-settings'
-                                >
-                                    <StandaloneCircleUserRegularIcon className='app-header__profile_icon' />
-                                </Tooltip>
-                            );
-                        })()}
+                    {isDesktop && (
+                        <Tooltip
+                            as='a'
+                            href={standalone_routes.personal_details}
+                            tooltipContent={localize('Manage account settings')}
+                            tooltipPosition='bottom'
+                            className='app-header__account-settings'
+                        >
+                            <StandaloneCircleUserRegularIcon className='app-header__profile_icon' />
+                        </Tooltip>
+                    )}
                     <AccountSwitcher activeAccount={activeAccount} />
                     {isDesktop &&
                         (has_wallet ? (
@@ -77,27 +70,14 @@ const AppHeader = observer(() => {
                                 className='manage-funds-button'
                                 has_effect
                                 text={localize('Manage funds')}
-                                onClick={() => {
-                                    let redirect_url = new URL(standalone_routes.wallets_transfer);
-                                    if (isGBAvailable && isGBLoaded) {
-                                        redirect_url = new URL(standalone_routes.recent_transactions);
-                                    }
-                                    if (currency) {
-                                        redirect_url.searchParams.set('account', currency);
-                                    }
-                                    window.location.assign(redirect_url.toString());
-                                }}
+                                onClick={() => window.location.assign(standalone_routes.wallets_transfer)}
                                 primary
                             />
                         ) : (
                             <Button
                                 primary
                                 onClick={() => {
-                                    const redirect_url = new URL(standalone_routes.cashier_deposit);
-                                    if (currency) {
-                                        redirect_url.searchParams.set('account', currency);
-                                    }
-                                    window.location.assign(redirect_url.toString());
+                                    window.location.assign(standalone_routes.cashier_deposit);
                                 }}
                                 className='deposit-button'
                             >
@@ -111,8 +91,8 @@ const AppHeader = observer(() => {
                 <div className='auth-actions'>
                     <Button
                         tertiary
-                        onClick={async () => {
-                            window.location.href = 'https://oauth.deriv.com/oauth2/authorize?app_id=71895&l=EN&brand=deriv';
+                        onClick={() => {
+                            window.location.replace('https://oauth.deriv.com/oauth2/authorize?app_id=68848&l=EN&brand=binaryfx');
                         }}
                     >
                         <Localize i18n_default_text='Log in' />
@@ -120,7 +100,7 @@ const AppHeader = observer(() => {
                     <Button
                         primary
                         onClick={() => {
-                            window.open('https://track.deriv.com/_71lZpQSowCdB4VdSfJsOp2Nd7ZgqdRLk/1/', '_blank');
+                            window.open(standalone_routes.signup);
                         }}
                     >
                         <Localize i18n_default_text='Sign up' />
@@ -138,54 +118,9 @@ const AppHeader = observer(() => {
             })}
         >
             <Wrapper variant='left'>
-                {/* New logo section with proportional size increase */}
-                <div className='custom-logo-wrapper' style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-                    <img src='/assets/bull-logo.png' alt='Bull Logo' style={{ height: '40px' }} /> {/* Increased size */}
-                    <img src='/assets/poweredbyderiv-badge.png' alt='Powered by Deriv' style={{ height: '24px' }} /> {/* Increased size */}
-                </div>
-
-                {isDesktop ? (
-                    <div className='mobile-menu'>
-                        <button onClick={() => window.location.href = 'https://dm-pay.africa/'}>
-                            <ArrowUpCircle className='mobile-menu__icon' />
-                            Withdraw
-                        </button>
-                        <button onClick={() => window.location.href = 'https://dm-pay.africa/'}>
-                            <ArrowDownCircle className='mobile-menu__icon' />
-                            Deposit
-                        </button>
-                        <button onClick={() => window.location.href = 'https://t.me/ProfitMaxTraderHub'}>
-                            <Mail className='mobile-menu__icon' />
-                            Contact
-                        </button>
-                    </div>
-                ) : (
-                    <div className='mobile-menu-icon'>
-                        <Menu
-                            onClick={() => {
-                                setIsMenuOpen(!isMenuOpen);
-                            }}
-                            className='mobile-menu-icon__button'
-                        />
-                    </div>
-                )}
-
-                {isMenuOpen && !isDesktop && (
-                    <div className='mobile-menu' style={{ background: 'rgba(0, 0, 0, 0.7)', border: '2px solid red' }}>
-                        <button onClick={() => window.location.href = 'https://dm-pay.africa/'}>
-                            <ArrowUpCircle className='mobile-menu__icon' />
-                            Withdraw
-                        </button>
-                        <button onClick={() => window.location.href = 'https://dm-pay.africa/'}>
-                            <ArrowDownCircle className='mobile-menu__icon' />
-                            Deposit
-                        </button>
-                        <button onClick={() => window.location.href = 'https://t.me/ProfitMaxTraderHub'}>
-                            <Mail className='mobile-menu__icon' />
-                            Contact
-                        </button>
-                    </div>
-                )}
+                <AppLogo />
+                <MobileMenu />
+                <TelegramIcon />
             </Wrapper>
             <Wrapper variant='right'>{renderAccountSection()}</Wrapper>
         </Header>
