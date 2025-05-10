@@ -139,10 +139,7 @@ const AppHeader = observer(() => {
         >
             <Wrapper variant='left'>
                 {/* New logo section with proportional size increase */}
-                <div className='custom-logo-wrapper' style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-                    <img src='/assets/bull-logo.png' alt='Bull Logo' style={{ height: '40px' }} /> {/* Increased size */}
-                    <img src='/assets/poweredbyderiv-badge.png' alt='Powered by Deriv' style={{ height: '24px' }} /> {/* Increased size */}
-                </div>
+                
 
                 {isDesktop ? (
                     <div className='mobile-menu'>
