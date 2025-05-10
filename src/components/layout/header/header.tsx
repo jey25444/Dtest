@@ -157,16 +157,14 @@ const AppHeader = observer(() => {
                         </button>
                     </div>
                 ) : (
-                    <div
-    className='mobile-menu-icon__button'
-    onClick={() => setIsMenuOpen(!isMenuOpen)}
-    role="button"
-    tabIndex={0}
-    onKeyDown={(e) => { if (e.key === 'Enter') setIsMenuOpen(!isMenuOpen); }}
-    style={{ cursor: 'pointer' }}
->
-    <Menu />
-</div>
+                    <div className='mobile-menu-icon'>  
+                        <Menu  
+                            onClick={() => {  
+                                setIsMenuOpen(!isMenuOpen);  
+                            }}  
+                            className='mobile-menu-icon__button'  
+                        />  
+                    </div>  
                 )}
 
                 {isMenuOpen && !isDesktop && (
