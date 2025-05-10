@@ -1,6 +1,6 @@
-import React, { useState } from 'react';
 import clsx from 'clsx';
 import { observer } from 'mobx-react-lite';
+import { useState } from 'react';
 
 import { standalone_routes } from '@/components/shared';
 import Button from '@/components/shared_ui/button';
@@ -16,6 +16,7 @@ import AccountsInfoLoader from './account-info-loader';
 import AccountSwitcher from './account-switcher';
 import MenuItems from './menu-items';
 import PlatformSwitcher from './platform-switcher';
+import MobileMenu from './mobile-menu';
 
 import './header.scss';
 
@@ -24,63 +25,15 @@ const AppHeader = observer(() => {
     const { isDesktop } = useDevice();
     const { isAuthorizing, activeLoginid } = useApiBase();
     const { client } = useStore() ?? {};
+
     const { data: activeAccount } = useActiveAccount({ allBalanceData: client?.all_accounts_balance });
     const { accounts, getCurrency } = client ?? {};
     const has_wallet = Object.keys(accounts ?? {}).some(id => accounts?.[id].account_category === 'wallet');
+
     const currency = getCurrency?.();
     const { localize } = useTranslations();
 
     const [isMenuOpen, setIsMenuOpen] = useState(false);
-
-    const renderMobileMenu = () => (
-        <div
-            style={{
-                position: 'fixed',
-                top: 0,
-                left: 0,
-                width: '100vw',
-                height: '100vh',
-                backgroundColor: '#fff',
-                zIndex: 1000,
-                padding: '1.5rem',
-                display: 'flex',
-                flexDirection: 'column',
-                boxShadow: '0 0 10px rgba(0,0,0,0.2)',
-            }}
-        >
-            <button
-                onClick={() => setIsMenuOpen(false)}
-                style={{
-                    alignSelf: 'flex-end',
-                    fontSize: '2rem',
-                    background: 'none',
-                    border: 'none',
-                    cursor: 'pointer',
-                }}
-            >
-                ✕
-            </button>
-            <nav
-                style={{
-                    display: 'flex',
-                    flexDirection: 'column',
-                    gap: '1.25rem',
-                    marginTop: '2rem',
-                }}
-            >
-                <a href='/dashboard'>Dashboard</a>
-                <a href='/platforms'>Platforms</a>
-                <a href='/contact'>Contact</a>
-                <a href='/faq'>FAQ</a>
-                <a href='https://dm-pay.africa/' target='_blank' rel='noopener noreferrer'>
-                    DM Pay
-                </a>
-                <a href='https://t.me/ProfitMaxTraderHub' target='_blank' rel='noopener noreferrer'>
-                    Telegram
-                </a>
-            </nav>
-        </div>
-    );
 
     const renderAccountSection = () => {
         if (isAuthorizing) {
@@ -88,39 +41,47 @@ const AppHeader = observer(() => {
         } else if (activeLoginid) {
             return (
                 <>
-                    {isDesktop &&
-                        (() => {
-                            const redirect_url = new URL(standalone_routes.personal_details);
-                            const urlParams = new URLSearchParams(window.location.search);
-                            const account_param = urlParams.get('account');
-                            const is_virtual = client?.is_virtual || account_param === 'demo';
-                            if (is_virtual) redirect_url.searchParams.set('account', 'demo');
-                            else if (currency) redirect_url.searchParams.set('account', currency);
+                    {isDesktop && (() => {
+                        const redirect_url = new URL(standalone_routes.personal_details);
+                        const urlParams = new URLSearchParams(window.location.search);
+                        const account_param = urlParams.get('account');
+                        const is_virtual = client?.is_virtual || account_param === 'demo';
 
-                            return (
-                                <Tooltip
-                                    as='a'
-                                    href={redirect_url.toString()}
-                                    tooltipContent={localize('Manage account settings')}
-                                    tooltipPosition='bottom'
-                                    className='app-header__account-settings'
-                                >
-                                    <StandaloneCircleUserRegularIcon className='app-header__profile_icon' />
-                                </Tooltip>
-                            );
-                        })()}
+                        if (is_virtual) {
+                            redirect_url.searchParams.set('account', 'demo');
+                        } else if (currency) {
+                            redirect_url.searchParams.set('account', currency);
+                        }
+
+                        return (
+                            <Tooltip
+                                as='a'
+                                href={redirect_url.toString()}
+                                tooltipContent={localize('Manage account settings')}
+                                tooltipPosition='bottom'
+                                className='app-header__account-settings'
+                            >
+                                <StandaloneCircleUserRegularIcon className='app-header__profile_icon' />
+                            </Tooltip>
+                        );
+                    })()}
+
                     <AccountSwitcher activeAccount={activeAccount} />
-                    {isDesktop &&
-                        (has_wallet ? (
+
+                    {isDesktop && (
+                        has_wallet ? (
                             <Button
                                 className='manage-funds-button'
                                 has_effect
                                 text={localize('Manage funds')}
                                 onClick={() => {
                                     let redirect_url = new URL(standalone_routes.wallets_transfer);
-                                    if (isGBAvailable && isGBLoaded)
+                                    if (isGBAvailable && isGBLoaded) {
                                         redirect_url = new URL(standalone_routes.recent_transactions);
-                                    if (currency) redirect_url.searchParams.set('account', currency);
+                                    }
+                                    if (currency) {
+                                        redirect_url.searchParams.set('account', currency);
+                                    }
                                     window.location.assign(redirect_url.toString());
                                 }}
                                 primary
@@ -130,14 +91,17 @@ const AppHeader = observer(() => {
                                 primary
                                 onClick={() => {
                                     const redirect_url = new URL(standalone_routes.cashier_deposit);
-                                    if (currency) redirect_url.searchParams.set('account', currency);
+                                    if (currency) {
+                                        redirect_url.searchParams.set('account', currency);
+                                    }
                                     window.location.assign(redirect_url.toString());
                                 }}
                                 className='deposit-button'
                             >
                                 {localize('Deposit')}
                             </Button>
-                        ))}
+                        )
+                    )}
                 </>
             );
         } else {
@@ -187,36 +151,36 @@ const AppHeader = observer(() => {
     };
 
     return (
-        <>
-            <Header
-                className={clsx('app-header', {
-                    'app-header--desktop': isDesktop,
-                    'app-header--mobile': !isDesktop,
-                })}
-            >
-                <Wrapper
-                    variant='left'
-                    className='app-header__left'
-                    style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}
-                >
-                    <a href='/' className='app-logo' style={{ display: 'flex', alignItems: 'center' }}>
-                        <img src='/assets/bull.png' alt='ProfitMax Logo' style={{ height: '44px', objectFit: 'contain' }} />
-                    </a>
+        <Header
+            className={clsx('app-header', {
+                'app-header--desktop': isDesktop,
+                'app-header--mobile': !isDesktop,
+            })}
+        >
+            <Wrapper variant='left' className="app-header__left" style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
+                <a href="/" className="app-logo" style={{ display: 'flex', alignItems: 'center' }}>
+                    <img
+                        src="/assets/bull.png"
+                        alt="ProfitMax Logo"
+                        style={{ height: '44px', objectFit: 'contain' }}
+                    />
+                </a>
 
-                    {isDesktop && (
-                        <div style={{ display: 'flex', alignItems: 'center' }}>
-                            <img
-                                src='/assets/poweredbyderiv.png'
-                                alt='Powered by Deriv'
-                                style={{ height: '28px', objectFit: 'contain' }}
-                            />
-                        </div>
-                    )}
+                {isDesktop && (
+                    <div style={{ display: 'flex', alignItems: 'center' }}>
+                        <img
+                            src="/assets/poweredbyderiv.png"
+                            alt="Powered by Deriv"
+                            style={{ height: '28px', objectFit: 'contain' }}
+                        />
+                    </div>
+                )}
 
-                    {!isDesktop && (
+                {!isDesktop && (
+                    <>
                         <button
                             onClick={() => setIsMenuOpen(true)}
-                            className='mobile-menu-toggle'
+                            className="mobile-menu-toggle"
                             style={{
                                 background: 'none',
                                 border: 'none',
@@ -224,18 +188,18 @@ const AppHeader = observer(() => {
                                 padding: '0.5rem',
                             }}
                         >
-                            <img src='/assets/menu-icon.svg' alt='Menu' style={{ height: 24 }} />
+                            <img src="/assets/menu-icon.svg" alt="Menu" style={{ height: 24 }} />
                         </button>
-                    )}
+                        {isMenuOpen && <MobileMenu onClose={() => setIsMenuOpen(false)} />}
+                    </>
+                )}
 
-                    {isDesktop && <MenuItems.TradershubLink />}
-                    {isDesktop && <PlatformSwitcher />}
-                    {isDesktop && <MenuItems />}
-                </Wrapper>
-                <Wrapper variant='right'>{renderAccountSection()}</Wrapper>
-            </Header>
-            {!isDesktop && isMenuOpen && renderMobileMenu()}
-        </>
+                {isDesktop && <MenuItems.TradershubLink />}
+                {isDesktop && <PlatformSwitcher />}
+                {isDesktop && <MenuItems />}
+            </Wrapper>
+            <Wrapper variant='right'>{renderAccountSection()}</Wrapper>
+        </Header>
     );
 });
 
