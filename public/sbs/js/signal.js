@@ -1,4 +1,4 @@
-var APP_ID = '71802';
+var APP_ID = '69271';
 
 const progress = document.getElementById("progress");
 const countdownEl = document.getElementById("countdown");
