@@ -122,7 +122,7 @@ const AppHeader = observer(() => {
                             height: '100%',
                         }}
                     >
-                        Deposit/Withdraw
+                    
                     </a>
 
                     <Button
