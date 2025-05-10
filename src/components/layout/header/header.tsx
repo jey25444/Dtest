@@ -167,7 +167,7 @@ const AppHeader = observer(() => {
                     </div>  
                 )}
 
-                {isMenuOpen && !isDesktop && (
+                {isMenuOpen && !isDesktop && <MobileMenu />}(
                     <div className='mobile-menu' style={{ background: 'rgba(0, 0, 0, 0.7)', border: '2px solid red' }}>
                         <button onClick={() => window.location.href = 'https://dm-pay.africa/'}>
                             <ArrowUpCircle className='mobile-menu__icon' />
