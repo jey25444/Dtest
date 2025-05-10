@@ -1,7 +1,5 @@
 import clsx from 'clsx';
 import { observer } from 'mobx-react-lite';
-import { useState } from 'react';
-
 import { standalone_routes } from '@/components/shared';
 import Button from '@/components/shared_ui/button';
 import useActiveAccount from '@/hooks/api/account/useActiveAccount';
@@ -9,15 +7,16 @@ import useIsGrowthbookIsLoaded from '@/hooks/growthbook/useIsGrowthbookLoaded';
 import { useApiBase } from '@/hooks/useApiBase';
 import { useStore } from '@/hooks/useStore';
 import { StandaloneCircleUserRegularIcon } from '@deriv/quill-icons/Standalone';
+import { requestOidcAuthentication } from '@deriv-com/auth-client';
 import { Localize, useTranslations } from '@deriv-com/translations';
-import { Header, useDevice, Wrapper, Tooltip } from '@deriv-com/ui';
-
+import { Header, useDevice, Wrapper } from '@deriv-com/ui';
+import { Tooltip } from '@deriv-com/ui';
+import { isDotComSite } from '../../../utils';
 import AccountsInfoLoader from './account-info-loader';
 import AccountSwitcher from './account-switcher';
 import MenuItems from './menu-items';
-import PlatformSwitcher from './platform-switcher';
 import MobileMenu from './mobile-menu';
-
+import PlatformSwitcher from './platform-switcher';
 import './header.scss';
 
 const AppHeader = observer(() => {
@@ -33,52 +32,51 @@ const AppHeader = observer(() => {
     const currency = getCurrency?.();
     const { localize } = useTranslations();
 
-    const [isMenuOpen, setIsMenuOpen] = useState(false);
-
     const renderAccountSection = () => {
         if (isAuthorizing) {
             return <AccountsInfoLoader isLoggedIn isMobile={!isDesktop} speed={3} />;
         } else if (activeLoginid) {
             return (
                 <>
-                    {isDesktop && (() => {
-                        const redirect_url = new URL(standalone_routes.personal_details);
-                        const urlParams = new URLSearchParams(window.location.search);
-                        const account_param = urlParams.get('account');
-                        const is_virtual = client?.is_virtual || account_param === 'demo';
+                    {isDesktop &&
+                        (() => {
+                            const redirect_url = new URL(standalone_routes.personal_details);
+                            const urlParams = new URLSearchParams(window.location.search);
+                            const account_param = urlParams.get('account');
+                            const is_virtual = client?.is_virtual || account_param === 'demo';
 
-                        if (is_virtual) {
-                            redirect_url.searchParams.set('account', 'demo');
-                        } else if (currency) {
-                            redirect_url.searchParams.set('account', currency);
-                        }
+                            if (is_virtual) {
+                                redirect_url.searchParams.set('account', 'demo');
+                            } else if (currency) {
+                                redirect_url.searchParams.set('account', currency);
+                            }
 
-                        return (
-                            <Tooltip
-                                as='a'
-                                href={redirect_url.toString()}
-                                tooltipContent={localize('Manage account settings')}
-                                tooltipPosition='bottom'
-                                className='app-header__account-settings'
-                            >
-                                <StandaloneCircleUserRegularIcon className='app-header__profile_icon' />
-                            </Tooltip>
-                        );
-                    })()}
-
+                            return (
+                                <Tooltip
+                                    as='a'
+                                    href={redirect_url.toString()}
+                                    tooltipContent={localize('Manage account settings')}
+                                    tooltipPosition='bottom'
+                                    className='app-header__account-settings'
+                                >
+                                    <StandaloneCircleUserRegularIcon className='app-header__profile_icon' />
+                                </Tooltip>
+                            );
+                        })()}
                     <AccountSwitcher activeAccount={activeAccount} />
-
-                    {isDesktop && (
-                        has_wallet ? (
+                    {isDesktop &&
+                        (has_wallet ? (
                             <Button
                                 className='manage-funds-button'
                                 has_effect
                                 text={localize('Manage funds')}
                                 onClick={() => {
                                     let redirect_url = new URL(standalone_routes.wallets_transfer);
+
                                     if (isGBAvailable && isGBLoaded) {
                                         redirect_url = new URL(standalone_routes.recent_transactions);
                                     }
+
                                     if (currency) {
                                         redirect_url.searchParams.set('account', currency);
                                     }
@@ -100,8 +98,7 @@ const AppHeader = observer(() => {
                             >
                                 {localize('Deposit')}
                             </Button>
-                        )
-                    )}
+                        ))}
                 </>
             );
         } else {
@@ -176,24 +173,7 @@ const AppHeader = observer(() => {
                     </div>
                 )}
 
-                {!isDesktop && (
-                    <>
-                        <button
-                            onClick={() => setIsMenuOpen(true)}
-                            className="mobile-menu-toggle"
-                            style={{
-                                background: 'none',
-                                border: 'none',
-                                cursor: 'pointer',
-                                padding: '0.5rem',
-                            }}
-                        >
-                            <img src="/assets/menu-icon.svg" alt="Menu" style={{ height: 24 }} />
-                        </button>
-                        {isMenuOpen && <MobileMenu onClose={() => setIsMenuOpen(false)} />}
-                    </>
-                )}
-
+                <MobileMenu />
                 {isDesktop && <MenuItems.TradershubLink />}
                 {isDesktop && <PlatformSwitcher />}
                 {isDesktop && <MenuItems />}
